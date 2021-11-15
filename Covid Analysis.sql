@@ -51,7 +51,14 @@ USE Portfolio_project;
 select dea.continent, dea.location, dea.date, dea.population, sum(convert(bigint, vac.new_vaccinations)) over (partition by dea.location order by dea.location, dea.date) as totalvacc
 from Covid19_deaths$ dea join Covid19_vaccinations$ vac on dea.location=vac.location and dea.date=vac.date
 where dea.continent is not null
-order by 5 desc
+
+-- looking at population vs vaccinations with CTE
+
+with popvsvac (continent, location, date, population, new_vaccinations, totalvacc) as
+( select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, sum(convert(bigint, vac.new_vaccinations)) over (partition by dea.location order by dea.location, dea.date) as totalvacc
+from Portfolio_project..Covid19_deaths$ dea join Portfolio_project..Covid19_vaccinations$ vac on dea.location=vac.location and dea.date=vac.date
+where dea.continent is not null)
+
 
 
 
